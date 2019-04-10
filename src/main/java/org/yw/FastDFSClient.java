@@ -323,20 +323,4 @@ public class FastDFSClient {
 		sb.append("&ts=").append(ts);
 		return sb.toString();
 	}
-
-	/**
-	 * 获取源文件的文件名称
-	 *
-	 * @param filepath
-	 *            文件路径
-	 * @return 文件名称
-	 */
-	public String getOriginalFilename(String filepath) {
-		Map<String, Object> descriptions = getFileDescriptions(filepath);
-		String fileName = String.valueOf(descriptions.get(FILENAME));
-		if (!FastDFSUtil.isNotBlank(fileName)) {
-			return (String) descriptions.get(FILENAME);
-		}
-		return "";
-	}
 }
