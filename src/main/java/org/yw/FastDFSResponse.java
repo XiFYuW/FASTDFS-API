@@ -55,6 +55,18 @@ public class FastDFSResponse {
 
     public FastDFSResponse(){}
 
+    public FastDFSResponse(int code, String message, boolean success, String filePath, String fileName, String fileType, String httpUrl, String token, Map<String, Object> descriptions) {
+        this.code = code;
+        this.message = message;
+        this.success = success;
+        this.filePath = filePath;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.httpUrl = httpUrl;
+        this.token = token;
+        this.descriptions = descriptions;
+    }
+
     public FastDFSResponse(boolean success) {
         this.success = success;
     }
@@ -97,6 +109,38 @@ public class FastDFSResponse {
 
     public void setDescriptions(Map<String, Object> descriptions) {
         this.descriptions = descriptions;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public String getHttpUrl() {
+        return httpUrl;
+    }
+
+    public String getToken() {
+        return token;
     }
 
     @Override

@@ -5,7 +5,6 @@ import org.csource.common.NameValuePair;
 import org.csource.fastdfs.FileInfo;
 import org.csource.fastdfs.ProtoCommon;
 import org.csource.fastdfs.StorageClient1;
-import org.csource.fastdfs.TrackerServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -266,7 +265,7 @@ public class FastDFSClient {
 
 	/**
 	 * 获取文件描述信息
-	 * 
+	 *
 	 * @param filepath
 	 *            文件路径
 	 * @return 文件描述信息

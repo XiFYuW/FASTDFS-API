@@ -5,7 +5,7 @@ package org.yw;
  */
 public enum FastDFSErrorCode {
     /**FAST统一错误*/
-    FILE_FAILED(5050, ""),
+    FILE_FAILED(5050, "FASTDFS服务异常"),
 	/**FASTDFS文件路径为空*/
     FILE_FASTDFS_PATH_ISNULL(3000, "FASTDFS文件路径为空"),
     /**本地文件路径为空*/
@@ -38,7 +38,7 @@ public enum FastDFSErrorCode {
     public int getCode() {
     	return this.code;
     }
-    
+
     public String getMessage() {
     	return this.message;
     }
