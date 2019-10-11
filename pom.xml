@@ -18,9 +18,17 @@
                     <target>8</target>
                     <encoding>utf8</encoding>
                 </configuration>
-
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>*</exclude>
+                </excludes>
+            </resource>
+        </resources>
     </build>
 
 
