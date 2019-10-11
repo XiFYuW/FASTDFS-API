@@ -4,8 +4,6 @@ package org.yw;
  *	文件服务器描述文本
  */
 public enum FastDFSErrorCode {
-    /**FAST统一错误*/
-    FILE_FAILED(5050, "FASTDFS服务异常"),
 	/**FASTDFS文件路径为空*/
     FILE_FASTDFS_PATH_ISNULL(3000, "FASTDFS文件路径为空"),
     /**本地文件路径为空*/
@@ -23,8 +21,11 @@ public enum FastDFSErrorCode {
     /**文件服务器连接失败*/
     FILE_SERVER_CONNECTION_FAILED(3006, "文件服务器连接失败"),
 	/**文件服务器异常，请联系管理员*/
-	FILE_FASTDDFS_ERR(3013, "文件服务器异常，请联系管理员");
-
+	FILE_FASTDFS_ERR(3013, "文件服务器异常，请联系管理员"),
+    /**其他*/
+    FILE_FASTDFS_FASTDFS(5050, ""),
+    /**文件服务器连接池初始化失败*/
+    FILE_FASTDFS_POOL_INIT_FAILED(3025, "文件服务器连接池初始化失败");
 
     public int code;
 

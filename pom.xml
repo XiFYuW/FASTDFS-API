@@ -6,7 +6,7 @@
 
     <groupId>fastdfs-api</groupId>
     <artifactId>fastdfs-api</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
     <build>
         <plugins>
