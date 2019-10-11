@@ -22,6 +22,7 @@ public class TrackerServerPool {
      */
     private static Logger logger = LoggerFactory.getLogger(TrackerServerPool.class);
 
+
     /**
      * TrackerServer 配置文件路径
      */
