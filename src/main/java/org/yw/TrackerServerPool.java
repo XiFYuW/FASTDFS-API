@@ -25,7 +25,7 @@ public class TrackerServerPool {
     /**
      * TrackerServer 配置文件路径
      */
-    private static final String FASTDFS_CONFIG_PATH = "fastdfs.properties";
+    private static final String FASTDFS_CONFIG_PATH = "application-fastDFS.properties";
 
     /**
      * 最大连接数 default 8.
@@ -44,7 +44,7 @@ public class TrackerServerPool {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		maxStorageConnection = Integer.valueOf(getValue("max_storage_connection"));
         httpSecretKey = getValue("fastdfs.http_secret_key");
         fileServerAdder = getValue("file_server_addr");
