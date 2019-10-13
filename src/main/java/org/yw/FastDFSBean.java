@@ -1,31 +1,42 @@
 package org.yw;
 
+import java.util.Properties;
+
 /**
  * @author https://github.com/XiFYuW
  * @date 2019/10/11 16:37
  */
 public class FastDFSBean {
     private String httpSecretKey;
+    private String ConfigPath;
     private String fileServerAdder;
-    private String configPath;
     private int maxStorageConnection;
     private String flagFileName;
     private String flagFileSuffix;
     private Long maxFileSize;
     private int minIdle;
 
+    private Properties properties;
+
     public FastDFSBean() {
     }
 
-    public FastDFSBean(String httpSecretKey, String fileServerAdder, String configPath, int maxStorageConnection, String flagFileName, String flagFileSuffix, Long maxFileSize, int minIdle) {
+    public FastDFSBean(String httpSecretKey, String fileServerAdder, int maxStorageConnection, String flagFileName, String flagFileSuffix, Long maxFileSize, int minIdle) {
         this.httpSecretKey = httpSecretKey;
         this.fileServerAdder = fileServerAdder;
-        this.configPath = configPath;
         this.maxStorageConnection = maxStorageConnection;
         this.flagFileName = flagFileName;
         this.flagFileSuffix = flagFileSuffix;
         this.maxFileSize = maxFileSize;
         this.minIdle = minIdle;
+    }
+
+    public String getConfigPath() {
+        return ConfigPath;
+    }
+
+    public void setConfigPath(String configPath) {
+        ConfigPath = configPath;
     }
 
     public String getHttpSecretKey() {
@@ -42,14 +53,6 @@ public class FastDFSBean {
 
     public void setFileServerAdder(String fileServerAdder) {
         this.fileServerAdder = fileServerAdder;
-    }
-
-    public String getConfigPath() {
-        return configPath;
-    }
-
-    public void setConfigPath(String configPath) {
-        this.configPath = configPath;
     }
 
     public int getMaxStorageConnection() {
@@ -92,6 +95,14 @@ public class FastDFSBean {
         this.minIdle = minIdle;
     }
 
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -99,8 +110,6 @@ public class FastDFSBean {
                 .append(httpSecretKey).append('\"');
         sb.append(",\"fileServerAdder\":\"")
                 .append(fileServerAdder).append('\"');
-        sb.append(",\"configPath\":\"")
-                .append(configPath).append('\"');
         sb.append(",\"maxStorageConnection\":")
                 .append(maxStorageConnection);
         sb.append(",\"flagFileName\":\"")

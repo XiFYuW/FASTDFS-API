@@ -31,8 +31,8 @@ public class TrackerServerPool {
     public static synchronized void getObjectPool(FastDFSBean fastDFSBean){
         if(trackerServerPool == null){
             try {
-                // 加载配置文件
-                ClientGlobal.initByProperties(fastDFSBean.getConfigPath());
+                // 加载配置
+                ClientGlobal.initByProperties(fastDFSBean.getProperties());
             } catch (IOException | MyException e) {
                 e.printStackTrace();
             }
