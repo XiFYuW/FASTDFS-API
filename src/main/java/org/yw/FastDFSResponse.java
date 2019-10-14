@@ -1,12 +1,13 @@
 package org.yw;
 
+import java.io.*;
 import java.util.Map;
 
 /**
  * 上传文件后的数据返回对象，便于前台获取数据.
  */
 
-public class FastDFSResponse {
+public class FastDFSResponse implements Serializable {
 
     /**
      * 返回状态编码
@@ -17,11 +18,6 @@ public class FastDFSResponse {
      * 返回信息
      */
     private String message;
-
-    /**
-     * 成功标识
-     */
-    private boolean success = true;
 
     /**
      * 文件路径
@@ -53,23 +49,29 @@ public class FastDFSResponse {
      */
     private Map<String, Object> descriptions;
 
-    public FastDFSResponse(){}
-
-    public FastDFSResponse(int code, String message, boolean success, String filePath, String fileName, String fileType, String httpUrl, String token, Map<String, Object> descriptions) {
-        this.code = code;
-        this.message = message;
-        this.success = success;
-        this.filePath = filePath;
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.httpUrl = httpUrl;
-        this.token = token;
-        this.descriptions = descriptions;
+    private static class FastDFSResponseSingleton{
+        private static final FastDFSResponse FASTDFSRESPONSR = new FastDFSResponse();
     }
 
-    public FastDFSResponse(boolean success) {
-        this.success = success;
+    public static FastDFSResponse getFastDFSResponse(){
+        return FastDFSResponseSingleton.FASTDFSRESPONSR;
     }
+
+    public static FastDFSResponse deepClone() throws FastDFSException{
+        try {
+            ByteArrayOutputStream bao = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(bao);
+            oos.writeObject(FastDFSResponse.getFastDFSResponse());
+            ByteArrayInputStream bi = new ByteArrayInputStream(bao.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bi);
+            return (FastDFSResponse)ois.readObject();
+        }catch (Exception e){
+            e.printStackTrace();
+            throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_QT.getCode(), e.getMessage());
+        }
+    }
+
+    private FastDFSResponse(){}
 
     public void setCode(int code) {
         this.code = code;
@@ -77,10 +79,6 @@ public class FastDFSResponse {
 
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
     }
 
     public void setFilePath(String filePath) {
@@ -119,10 +117,6 @@ public class FastDFSResponse {
         return message;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
     public String getFilePath() {
         return filePath;
     }
@@ -150,8 +144,6 @@ public class FastDFSResponse {
                 .append(code);
         sb.append(",\"message\":\"")
                 .append(message).append('\"');
-        sb.append(",\"success\":")
-                .append(success);
         sb.append(",\"filePath\":\"")
                 .append(filePath).append('\"');
         sb.append(",\"fileName\":\"")

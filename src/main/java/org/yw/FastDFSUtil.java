@@ -4,12 +4,13 @@ import org.csource.fastdfs.StorageClient1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class FastDFSUtil {
-    /**
-     * org.slf4j.Logger
-     */
+
     private static Logger logger = LoggerFactory.getLogger(FastDFSUtil.class);
     /**
      * 路径分隔符
@@ -81,15 +82,37 @@ public class FastDFSUtil {
     }
 
     /**
-     * 获取FastDFS文件的名称，如：M00/00/00/wKgzgFnkTPyAIAUGAAEoRmXZPp876.jpeg
+     * 获取FastDFS文件的名称
      *
      * @param fileId
      *            包含组名和文件名，如：group1/M00/00/00/wKgzgFnkTPyAIAUGAAEoRmXZPp876.jpeg
      * @return FastDFS 返回的文件名：M00/00/00/wKgzgFnkTPyAIAUGAAEoRmXZPp876.jpeg
      */
-    public static String getFilename(String fileId) {
+    public static String getFastDFSFileName(String fileId) {
         String[] results = new String[2];
         StorageClient1.split_file_id(fileId, results);
         return results[1];
+    }
+
+    public static String getFileName(String filePath) {
+        return filePath.substring(filePath.lastIndexOf("/") + 1);
+    }
+
+    public static InputStream checkFilePathIlleng(String filePath) throws FastDFSException{
+        if(!FastDFSUtil.isNotBlank(filePath)){
+            throw new FastDFSException(FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getMessage());
+        }
+        File file = new File(filePath);
+        if(!file.exists()){
+            throw new FastDFSException(FastDFSErrorCode.FILE_NOT_EXIST.getCode(), FastDFSErrorCode.FILE_NOT_EXIST.getMessage());
+        }
+        InputStream in;
+        try {
+            in = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_QT.getCode(), FastDFSErrorCode.FILE_FASTDFS_QT.getMessage());
+        }
+        return in;
     }
 }

@@ -23,9 +23,6 @@ import java.util.Map;
  */
 public class FastDFSClient {
 
-	/**
-	 * org.slf4j.Logger
-	 */
 	private static Logger logger = LoggerFactory.getLogger(FastDFSClient.class);
 
 	private FastDFSBean fastDFSBean;
@@ -35,34 +32,13 @@ public class FastDFSClient {
 		TrackerServerPool.getObjectPool(fastDFSBean);
 	}
 
-	public FastDFSResponse uploadTo(InputStream in, String filePath, Map<String, Object> descriptions) throws FastDFSException{
-		FastDFSResponse fastDFSResponse = new FastDFSResponse();
-		String path;
-		try {
-			path = upload(in,filePath,descriptions);
-		} catch (FastDFSException e) {
-			fastDFSResponse.setSuccess(false);
-			fastDFSResponse.setCode(e.getCode());
-			fastDFSResponse.setMessage(e.getMessage());
-			return fastDFSResponse;
-		}
-		String token = getToken(path);
-		descriptions = getFileDescriptions(path);
-		fastDFSResponse.setDescriptions(descriptions);
-		fastDFSResponse.setToken(token);
-		fastDFSResponse.setHttpUrl(getFastDFSBean().getFileServerAdder() + "/" + path + "?" + token);
-		fastDFSResponse.setFilePath(path);
-		fastDFSResponse.setFileName(String.valueOf(descriptions.get("FILENAME")));
-		fastDFSResponse.setFileType(String.valueOf(descriptions.get("FILESUFFIX")));
-		return  fastDFSResponse;
-	}
 	/**
 	 * 上传通用方法
 	 *
 	 * @param in
-	 *            文件输入流
+	 *            文件输入流,可以为null
 	 * @param filePath
-	 *            文件路径
+	 *            文件路径,不能为空;当in=null,filePath必须能表示为一个file对象
 	 * @param descriptions
 	 *            文件描述信息
 	 * @return 组名+文件路径，如：group1/M00/00/00/wKgz6lnduTeAMdrcAAEoRmXZPp870.jpeg
@@ -70,23 +46,20 @@ public class FastDFSClient {
 	 * @throws Exception
 	 */
 	public String upload(InputStream in, String filePath, Map<String, Object> descriptions) throws FastDFSException {
-		if (null == in) {
+		if (null == in && !FastDFSUtil.isNotBlank(filePath)) {
 			throw new FastDFSException(FastDFSErrorCode.FILE_ISNULL.getCode(), FastDFSErrorCode.FILE_ISNULL.getMessage());
 		}
-		if(!new File(filePath).exists()){
-			throw new FastDFSException(FastDFSErrorCode.FILE_NOT_EXIST.getCode(), FastDFSErrorCode.FILE_NOT_EXIST.getMessage());
+		if (null == in && FastDFSUtil.isNotBlank(filePath)) {
+			in = FastDFSUtil.checkFilePathIlleng(filePath);
 		}
-		if(!FastDFSUtil.isNotBlank(filePath)){
-			throw new FastDFSException(FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getMessage());
-		}
+
 		filePath = FastDFSUtil.toLocal(filePath);
-		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+		String fileName = FastDFSUtil.getFileName(filePath);
 		// 返回路径
 		String path = null;
 		// 文件描述
 		NameValuePair[] nvps = null;
 		List<NameValuePair> nvpsList = new ArrayList<>();
-
 		// 文件名
 		if (FastDFSUtil.isNotBlank(fileName)) {
 			nvpsList.add(new NameValuePair(getFastDFSBean().getFlagFileName(), fileName));
@@ -98,7 +71,7 @@ public class FastDFSClient {
 		if (descriptions != null && descriptions.size() > 0) {
 			descriptions.forEach((key, value) -> nvpsList.add(new NameValuePair(key, String.valueOf(value))));
 		}
-		// List 转 Array
+
 		if (nvpsList.size() > 0) {
 			nvps = new NameValuePair[nvpsList.size()];
 			nvpsList.toArray(nvps);
@@ -121,9 +94,8 @@ public class FastDFSClient {
 			}
 		} catch (IOException | MyException e) {
 			e.printStackTrace();
-			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_FASTDFS.getCode(), e.getMessage());
+			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_QT.getCode(), e.getMessage());
 		}finally {
-			// 返还对象
 			TrackerServerPool.returnObject();
 			try {
 				in.close();
@@ -145,8 +117,7 @@ public class FastDFSClient {
 	 * @param outPath
 	 *            本地路径
 	 */
-	public void download(String filePath, String outPath)
-			throws FastDFSException {
+	public void download(String filePath, String outPath) throws FastDFSException {
 		if (!FastDFSUtil.isNotBlank(filePath)) {
 			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_FASTDFS_PATH_ISNULL.getMessage());
 		}
@@ -160,6 +131,7 @@ public class FastDFSClient {
 		}else{
 			outPath += fileName;
 		}
+
 		if (logger.isDebugEnabled()) {
 			logger.debug("从FASTDFS {} 下载至 {}", filePath, outPath);
 		}
@@ -167,13 +139,13 @@ public class FastDFSClient {
 		OutputStream os = null;
 		try {
 			os = new FileOutputStream(outPath);
-			int errno = storageClient.download_file1(filePath, new DownloadFileWriter(os));
-	        if (errno != 0) {
+			int no = storageClient.download_file1(filePath, new DownloadFileWriter(os));
+	        if (no != 0) {
 	        	throw new FastDFSException(FastDFSErrorCode.FILE_DOWNLOAD_FAILED.getCode(), FastDFSErrorCode.FILE_DOWNLOAD_FAILED.getMessage());
 	        }
 		} catch (MyException | IOException e) {
 			e.printStackTrace();
-			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_FASTDFS.getCode(), e.getMessage());
+			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_QT.getCode(), e.getMessage());
 		} finally {
 			TrackerServerPool.returnObject();
 			try {
@@ -195,16 +167,14 @@ public class FastDFSClient {
 	 *
 	 * @param filePath
 	 *            文件路径
-	 * @return 删除成功返回 0, 失败返回其它
 	 */
-	public int delete(String filePath) throws FastDFSException {
+	public void delete(String filePath) throws FastDFSException {
 		if (!FastDFSUtil.isNotBlank(filePath)) {
 			throw new FastDFSException(FastDFSErrorCode.FILE_FASTDFS_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_FASTDFS_PATH_ISNULL.getMessage());
 		}
 		StorageClient1 storageClient = TrackerServerPool.getStorageClient1();
-		int success = 0;
 		try {
-			success = storageClient.delete_file1(filePath);
+			int success = storageClient.delete_file1(filePath);
 			if (success != 0) {
 				throw new FastDFSException(FastDFSErrorCode.FILE_DELETE_FAILED.getCode(), FastDFSErrorCode.FILE_DELETE_FAILED.getMessage());
 			}
@@ -214,7 +184,6 @@ public class FastDFSClient {
 		}finally {
 			TrackerServerPool.returnObject();
 		}
-		return success;
 	}
 
 	/**
@@ -264,9 +233,9 @@ public class FastDFSClient {
 	 */
 	public String getToken(String filepath) {
 		int ts = (int) Instant.now().getEpochSecond();
-		String token = "null";
+		String token;
 		try {
-			token = ProtoCommon.getToken(FastDFSUtil.getFilename(filepath), ts, getFastDFSBean().getHttpSecretKey());
+			token = ProtoCommon.getToken(FastDFSUtil.getFastDFSFileName(filepath), ts, getFastDFSBean().getHttpSecretKey());
 		} catch (UnsupportedEncodingException | NoSuchAlgorithmException | MyException e) {
 			e.printStackTrace();
 			return null;
