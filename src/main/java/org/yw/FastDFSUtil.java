@@ -99,9 +99,6 @@ public class FastDFSUtil {
     }
 
     public static InputStream checkFilePathIlleng(String filePath) throws FastDFSException{
-        if(!FastDFSUtil.isNotBlank(filePath)){
-            throw new FastDFSException(FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getMessage());
-        }
         File file = new File(filePath);
         if(!file.exists()){
             throw new FastDFSException(FastDFSErrorCode.FILE_NOT_EXIST.getCode(), FastDFSErrorCode.FILE_NOT_EXIST.getMessage());

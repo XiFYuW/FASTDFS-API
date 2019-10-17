@@ -49,7 +49,10 @@ public class FastDFSClient {
 		if (null == in && !FastDFSUtil.isNotBlank(filePath)) {
 			throw new FastDFSException(FastDFSErrorCode.FILE_ISNULL.getCode(), FastDFSErrorCode.FILE_ISNULL.getMessage());
 		}
-		if (null == in && FastDFSUtil.isNotBlank(filePath)) {
+		if(!FastDFSUtil.isNotBlank(filePath)){
+			throw new FastDFSException(FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getCode(), FastDFSErrorCode.FILE_LOCAL_PATH_ISNULL.getMessage());
+		}
+		if (null == in) {
 			in = FastDFSUtil.checkFilePathIlleng(filePath);
 		}
 
